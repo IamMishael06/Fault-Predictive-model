@@ -1,2 +1,9 @@
 data/
 resampled_csv/
+cleaned_csv/
+/.ipynb_checkpoints/
+*.csv
+*.parquet
+notebooks/*.csv
+DS_Store
+
