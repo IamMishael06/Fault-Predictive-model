@@ -1,9 +1,21 @@
+# heavy data folders
 data/
 resampled_csv/
 cleaned_csv/
-/.ipynb_checkpoints/
+
+# Csv files
 *.csv
 *.parquet
 notebooks/*.csv
-DS_Store
 
+# macOS system files
+.DS_Store
+notebooks/mlruns/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+/.ipynb_checkpoints/
+
+# Python compiled files
+__pycache__/
+api/__pycache__/
