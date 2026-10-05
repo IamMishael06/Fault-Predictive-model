@@ -12,6 +12,9 @@ notebooks/*.csv
 .DS_Store
 notebooks/mlruns/
 
+# Environment files from all folders
+.env
+
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 /.ipynb_checkpoints/
@@ -19,3 +22,10 @@ notebooks/mlruns/
 # Python compiled files
 __pycache__/
 api/__pycache__/
+
+# Artifacts
+notebooks/Feature_importance_LightGBM
+notebooks/Feature_importance_RandomForest
+notebooks/Feature_importance_XGBoost
+notebooks/*.png
+api/.env

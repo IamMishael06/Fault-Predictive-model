@@ -7,6 +7,7 @@ from db.db import engine, Engineer
 from auth.security import get_password_hash, verify_password, create_access_token
 from datetime import datetime, timedelta
 
+
 router = APIRouter(prefix='/auth', tags=['Authentication'])
 
 class EngineerDeets(SQLModel):
@@ -37,13 +38,20 @@ def register(EngeerDeets : EngineerDeets):
 
 @router.post('/login')
 def login(email : str, password : str):
-
     custom_time = timedelta(hours=5)
     with Session(engine) as session:
         statement = select(Engineer).where(Engineer.engineer_email == email)
-        engineer = session.exec(statement)
+        engineer = session.exec(statement).first()
         if engineer and verify_password(password, engineer.engineer_password):
-            encoded_jwt = create_access_token(data={"email" : engineer.engineer_email}, expires_in=custom_time)
+            encoded_jwt = create_access_token(data={"sub": str(engineer.engineer_id)}, expires_in=custom_time)
+
+            # Update the is_logged_in field to True for the logged-in engineer
+            engineer.is_logged_in = True
+            session.add(engineer)
+            session.commit()
+            session.refresh(engineer)
+
+            # Return the JWT and a success message
             return {
                 "jwt" : encoded_jwt,
                 "msg" : f"User Successfully logged {engineer.engineer_email}"
@@ -53,3 +61,37 @@ def login(email : str, password : str):
                 "msg" : "Incorrect Password or email"
             }
 
+@router.post('/logout')
+def logout(email : str):
+    with Session(engine) as session:
+        statement = select(Engineer).where(Engineer.engineer_email == email)
+        engineer = session.exec(statement).first()
+        if engineer:
+            # Update the is_logged_in field to False for the logged-out engineer
+            engineer.is_logged_in = False
+            session.add(engineer)
+            session.commit()
+            session.refresh(engineer)
+
+            return {
+                "msg" : f"User Successfully logged out {engineer.engineer_email}"
+            }
+        else:
+            return{
+                "msg" : "Engineer not found"
+            }
+
+@router.delete('/remove_engineer/{engineer_id}')
+def remove_engineer(engineer_id : int):
+    with Session(engine) as session:
+        statement = (
+            select(Engineer)
+            .where(Engineer.engineer_id == engineer_id)
+        )
+        user_to_delete = session.exec(statement).first()
+        if user_to_delete:
+            session.delete(user_to_delete)
+            session.commit()
+            return {"message": f"Engineer with ID {engineer_id} has been removed."}
+        else:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Engineer with ID {engineer_id} not found.")

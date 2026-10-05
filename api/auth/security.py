@@ -58,3 +58,16 @@ def create_access_token(data : dict, expires_in : timedelta | None = 15) -> str:
     encoded_jwt = jwt.encode(to_encode,secret_key, Algorithm="HS256")
 
     return encoded_jwt
+
+def decode_access_token(token : str) -> dict:
+    """
+    Decodes a Json Web Token using a secret key and algorithm.
+    Arguments:
+    token : str : The JWT to decode.
+    """
+    secret_key = os.getenv('SECRET_KEY')
+    try:
+        decoded_jwt = jwt.decode(token, secret_key, algorithms=["HS256"])
+        return decoded_jwt
+    except jwt.ExpiredSignatureError:
+        raise Exception("Token has expired")
