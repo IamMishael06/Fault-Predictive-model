@@ -1,7 +1,8 @@
 # heavy data folders
 data/
 resampled_csv/
-cleaned_csv/
+# cleaned_csv/
+!*.dvc
 
 # Csv files
 *.csv
