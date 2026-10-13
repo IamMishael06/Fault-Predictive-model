@@ -30,5 +30,6 @@ notebooks/Feature_importance_LightGBM
 notebooks/Feature_importance_RandomForest
 notebooks/Feature_importance_XGBoost
 notebooks/*.png
+notebooks/metrics/
 
 cleaned_csv/dvc-storage-*.json
