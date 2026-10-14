@@ -33,3 +33,6 @@ notebooks/*.png
 notebooks/metrics/
 
 cleaned_csv/dvc-storage-*.json
+
+// ENV VARIABLES
+.env
