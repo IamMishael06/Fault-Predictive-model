@@ -4,8 +4,10 @@ from pydantic import BaseModel, StringConstraints
 from fastapi.responses import RedirectResponse
 from typing import Annotated
 from db.db import engine, Engineer
+from logs.predict import get_current_engineer
 from auth.security import get_password_hash, verify_password, create_access_token
 from datetime import datetime, timedelta
+from fastapi.security import OAuth2PasswordRequestForm
 
 
 router = APIRouter(prefix='/auth', tags=['Authentication'])
@@ -26,7 +28,7 @@ def register(EngeerDeets : EngineerDeets):
         if existing_engineer:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Engineer with this email already exists.")
         new_engineer = Engineer(
-            engineer_name=EngeerDeets.enginer_name,
+            engineer_name=EngeerDeets.engineer_name,
             engineer_email=EngeerDeets.engineer_email,
             engineer_password=get_password_hash(EngeerDeets.engineer_password)
         )
@@ -36,9 +38,14 @@ def register(EngeerDeets : EngineerDeets):
         return {"message": f"Engineer registered successfully with ID: {new_engineer.engineer_id} and email: {new_engineer.engineer_email}"}
 
 
+
 @router.post('/login')
-def login(email : str, password : str):
+def login( form_data: OAuth2PasswordRequestForm = Depends()):
     custom_time = timedelta(hours=5)
+
+    # OAuth2 uses username, but we treat it as the email
+    email = form_data.username
+    password = form_data.password
     with Session(engine) as session:
         statement = select(Engineer).where(Engineer.engineer_email == email)
         engineer = session.exec(statement).first()
@@ -53,13 +60,23 @@ def login(email : str, password : str):
 
             # Return the JWT and a success message
             return {
-                "jwt" : encoded_jwt,
-                "msg" : f"User Successfully logged {engineer.engineer_email}"
+               "access_token": encoded_jwt,
+                "token_type": "bearer"
             }
         else:
             return{
                 "msg" : "Incorrect Password or email"
             }
+
+@router.get('/me')
+def get_current_engineer(current_engineer : Engineer =  Depends(get_current_engineer)):
+    if current_engineer:
+        return {
+            "Current User" : current_engineer.engineer_name,
+            "Current User's mail" : current_engineer.engineer_email
+        }
+    else:
+        return HTTPException(status_code=401, details="No active User")
 
 @router.post('/logout')
 def logout(email : str):

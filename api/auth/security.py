@@ -55,7 +55,7 @@ def create_access_token(data : dict, expires_in : timedelta | None = 15) -> str:
     secret_key = os.getenv('SECRET_KEY')
 
     # Mathematically sign the token using the secret key and algorithm and the data
-    encoded_jwt = jwt.encode(to_encode,secret_key, Algorithm="HS256")
+    encoded_jwt = jwt.encode(to_encode,secret_key, algorithm="HS256")
 
     return encoded_jwt
 

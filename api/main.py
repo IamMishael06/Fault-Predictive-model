@@ -15,14 +15,11 @@ async def lifespan(app: FastAPI):
     init_db()  # Runs right when uvicorn starts
     yield
 
-app = FastAPI(title="Oil Well Fault Detection API", lifespan=lifespan)
+app = FastAPI(title="Oil Well Fault Detection API", lifespan=lifespan, swagger_ui_parameters={"persistAuthorization" : True})
 
 # Plug the isolated routers into the main application
 app.include_router(auth_router)
 app.include_router(logs_router)
-
-
-
 
 
 
