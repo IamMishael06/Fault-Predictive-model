@@ -20,6 +20,7 @@ api/.env
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 /.ipynb_checkpoints/
+notebooks/.ipynb_checkpoints/
 
 # Python compiled files
 __pycache__/
