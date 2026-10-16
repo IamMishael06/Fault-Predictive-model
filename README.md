@@ -16,7 +16,29 @@ The project emphasises **early fault detection** — identifying the transient w
 
 ## System Architecture
 
-Log in (Engineer logs in and runs the prediction logic) --> Sensor readings (6 baseline features) gotten every second --> Preprocessing (getting 30 rows (1 row for 1-sec of time) and resampling to a 30-sec dataset. row is then preprocessed using feature engineering functions) --> Inference (LightGBM predicts the fault type) --> PostgreSQL (Saves logs to Log table).
+
+## System Architecture
+
+```mermaid
+flowchart TD
+    A["Engineer Authentication (JWT)"]
+    B["Synthetic Sensor Stream (1-second readings)"]
+    C["30-second Resampling"]
+    D["Historical Buffer (240 observations / 120 minutes)"]
+    E["Rolling Statistics & Feature Engineering"]
+    F["LightGBM Champion Model"]
+    G["PostgreSQL - Prediction Logs"]
+    H["NDJSON - Stream Predictions to Client"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    F --> H
+```
+
 
 ## Dataset
 
