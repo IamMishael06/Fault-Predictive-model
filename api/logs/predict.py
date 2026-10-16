@@ -9,13 +9,17 @@ import asyncio
 from collections import deque
 import csv
 import os
+from dotenv import load_dotenv
 import mlflow.sklearn
+from mlflow import MlflowClient
 import json
 from preprocessing.preprocessing import roll_win, preproccesing, process_file
 import pandas as pd
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.responses import StreamingResponse
 from pathlib import Path
+import jwt
+from auth.token_blacklist import token_blacklist
 
 
 
@@ -23,6 +27,7 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
 
 class PredictionInput(SQLModel):
     timestamp : datetime = Field(default_factory=datetime.now)
@@ -35,36 +40,46 @@ class PredictionInput(SQLModel):
     QGL : int = Field(alias="QGL", description="Flow rate at the glow checkpoint")
     well_id : int 
 
+
+
+
 def get_current_engineer(token: str = Depends(oauth2_scheme)):
     # Here you would decode the JWT token and retrieve the engineer's information (Here, it is the email)
-    payload = decode_access_token(token)
-    engineer_id = payload.get("sub")
+    if token in token_blacklist:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token has been revoked (Logged out). Please log in again.",
+        )
+    try:
+        payload = decode_access_token(token)
+        engineer_id = payload.get("sub")
 
-    print(engineer_id)
+        print(engineer_id)
 
-    if engineer_id is None:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        if engineer_id is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
 
-    engineer_id = int(engineer_id)
+        engineer_id = int(engineer_id)
 
-    with Session(engine) as session:
-        statement = select(Engineer).where(Engineer.engineer_id == engineer_id)
-        engineer = session.exec(statement).first()
-        if not engineer:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
-        return engineer
+        with Session(engine) as session:
+            statement = select(Engineer).where(Engineer.engineer_id == engineer_id)
+            engineer = session.exec(statement).first()
+            if not engineer:
+                raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid authentication credentials")
+            
+            return engineer
+        
+    except jwt.PyJWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
 
 
 
 # ---------------------------------------------------------
-# LOAD MODEL FROM MLFLOW MODEL REGISTRY
+# LOAD MODEL FROM MLFLOW MODEL FOLDER CONTAINING SAVED ARTIFCATS
 # ---------------------------------------------------------
+MODEL_PATH = (Path(__file__).resolve().parents[2] / "models" / "champion")
 
-mlflow.set_tracking_uri(f"postgresql://postgres:{os.getenv('DB_PASSWORD')}@localhost:5432/mlflow_oil_logging")
-
-MODEL_URI = "models:/Oil_Well_Fault_Detector@champion"
-
-model = mlflow.sklearn.load_model(MODEL_URI)
+model = mlflow.sklearn.load_model(str(MODEL_PATH))
 
 
 router = APIRouter(prefix='/predict', tags=['Predictions'])

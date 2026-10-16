@@ -1,0 +1,85 @@
+artifact_path: /Users/Tari/Desktop/Tari/oil_dataset/predictive_maintenance_dataset/notebooks/mlruns/1/models/m-9336780419854c738dd0826db7303193/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.13.15
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.9.1
+    skops_trusted_types:
+    - collections.OrderedDict
+    - lightgbm.basic.Booster
+    - lightgbm.sklearn.LGBMClassifier
+    - numpy.dtype
+is_signature_from_type_hint: false
+mlflow_version: 3.16.1
+model_id: m-9336780419854c738dd0826db7303193
+model_size_bytes: 28327873
+model_uuid: m-9336780419854c738dd0826db7303193
+prompts: null
+run_id: 5b05484628354eddb789fa25ba0541b9
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "P-TPT", "required": true}, {"type": "double",
+    "name": "T-TPT", "required": true}, {"type": "double", "name": "P-MON-CKP", "required":
+    true}, {"type": "double", "name": "T-JUS-CKP", "required": true}, {"type": "double",
+    "name": "P-JUS-CKGL", "required": true}, {"type": "double", "name": "QGL", "required":
+    true}, {"type": "double", "name": "gas_lift_active", "required": true}, {"type":
+    "double", "name": "month_sin", "required": true}, {"type": "double", "name": "month_cos",
+    "required": true}, {"type": "double", "name": "P-TPT_mean_10min", "required":
+    true}, {"type": "double", "name": "P-TPT_var_10min", "required": true}, {"type":
+    "double", "name": "P-TPT_std_10min", "required": true}, {"type": "double", "name":
+    "P-TPT_range_10min", "required": true}, {"type": "double", "name": "P-TPT_mean_120min",
+    "required": true}, {"type": "double", "name": "P-TPT_std_120min", "required":
+    true}, {"type": "double", "name": "T-TPT_mean_10min", "required": true}, {"type":
+    "double", "name": "T-TPT_var_10min", "required": true}, {"type": "double", "name":
+    "T-TPT_std_10min", "required": true}, {"type": "double", "name": "T-TPT_range_10min",
+    "required": true}, {"type": "double", "name": "T-TPT_mean_120min", "required":
+    true}, {"type": "double", "name": "T-TPT_std_120min", "required": true}, {"type":
+    "double", "name": "P-MON-CKP_mean_10min", "required": true}, {"type": "double",
+    "name": "P-MON-CKP_var_10min", "required": true}, {"type": "double", "name": "P-MON-CKP_std_10min",
+    "required": true}, {"type": "double", "name": "P-MON-CKP_range_10min", "required":
+    true}, {"type": "double", "name": "P-MON-CKP_mean_120min", "required": true},
+    {"type": "double", "name": "P-MON-CKP_std_120min", "required": true}, {"type":
+    "double", "name": "T-JUS-CKP_mean_10min", "required": true}, {"type": "double",
+    "name": "T-JUS-CKP_var_10min", "required": true}, {"type": "double", "name": "T-JUS-CKP_std_10min",
+    "required": true}, {"type": "double", "name": "T-JUS-CKP_range_10min", "required":
+    true}, {"type": "double", "name": "T-JUS-CKP_mean_120min", "required": true},
+    {"type": "double", "name": "T-JUS-CKP_std_120min", "required": true}, {"type":
+    "double", "name": "P-JUS-CKGL_mean_10min", "required": true}, {"type": "double",
+    "name": "P-JUS-CKGL_var_10min", "required": true}, {"type": "double", "name":
+    "P-JUS-CKGL_std_10min", "required": true}, {"type": "double", "name": "P-JUS-CKGL_range_10min",
+    "required": true}, {"type": "double", "name": "P-JUS-CKGL_mean_120min", "required":
+    true}, {"type": "double", "name": "P-JUS-CKGL_std_120min", "required": true},
+    {"type": "double", "name": "QGL_mean_10min", "required": true}, {"type": "double",
+    "name": "QGL_var_10min", "required": true}, {"type": "double", "name": "QGL_std_10min",
+    "required": true}, {"type": "double", "name": "QGL_range_10min", "required": true},
+    {"type": "double", "name": "QGL_mean_120min", "required": true}, {"type": "double",
+    "name": "QGL_std_120min", "required": true}, {"type": "double", "name": "P-TPT_ewm",
+    "required": true}, {"type": "double", "name": "P-MON-CKP_ewm", "required": true},
+    {"type": "double", "name": "P-JUS-CKGL_ewm", "required": true}, {"type": "double",
+    "name": "QGL_ewm", "required": true}, {"type": "double", "name": "T_P_divergence",
+    "required": true}, {"type": "double", "name": "choke_pressure_diff", "required":
+    true}, {"type": "double", "name": "productivity_index", "required": true}, {"type":
+    "double", "name": "hydrate_risk", "required": true}, {"type": "double", "name":
+    "P_TPT_diff", "required": true}, {"type": "double", "name": "P_TPT_sign_changes",
+    "required": true}, {"type": "double", "name": "P_MON_CKP_slope_60", "required":
+    true}, {"type": "double", "name": "P_TPT_std_60", "required": true}, {"type":
+    "double", "name": "T_TPT_std_60", "required": true}, {"type": "long", "name":
+    "all_stable", "required": true}, {"type": "long", "name": "stability_streak",
+    "required": true}]'
+  outputs: '[{"type": "tensor", "tensor-spec": {"dtype": "float64", "shape": [-1]}}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-10-13 21:34:28.683227'

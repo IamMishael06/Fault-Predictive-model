@@ -7,10 +7,13 @@ from db.db import engine, Engineer
 from logs.predict import get_current_engineer
 from auth.security import get_password_hash, verify_password, create_access_token
 from datetime import datetime, timedelta
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
+from .token_blacklist import token_blacklist
 
 
 router = APIRouter(prefix='/auth', tags=['Authentication'])
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 class EngineerDeets(SQLModel):
     engineer_id: int = Field(..., description="Unique identifier for the engineer", lt=10**10, gt=10**8)
@@ -50,14 +53,15 @@ def login( form_data: OAuth2PasswordRequestForm = Depends()):
         statement = select(Engineer).where(Engineer.engineer_email == email)
         engineer = session.exec(statement).first()
         if engineer and verify_password(password, engineer.engineer_password):
-            encoded_jwt = create_access_token(data={"sub": str(engineer.engineer_id)}, expires_in=custom_time)
-
             # Update the is_logged_in field to True for the logged-in engineer
             engineer.is_logged_in = True
             session.add(engineer)
             session.commit()
             session.refresh(engineer)
 
+            if engineer.is_logged_in == True:
+                encoded_jwt = create_access_token(data={"sub": str(engineer.engineer_id)}, expires_in=custom_time)
+    
             # Return the JWT and a success message
             return {
                "access_token": encoded_jwt,
@@ -69,7 +73,7 @@ def login( form_data: OAuth2PasswordRequestForm = Depends()):
             }
 
 @router.get('/me')
-def get_current_engineer(current_engineer : Engineer =  Depends(get_current_engineer)):
+def get_my_profile(current_engineer : Engineer =  Depends(get_current_engineer)):
     if current_engineer:
         return {
             "Current User" : current_engineer.engineer_name,
@@ -78,10 +82,11 @@ def get_current_engineer(current_engineer : Engineer =  Depends(get_current_engi
     else:
         return HTTPException(status_code=401, details="No active User")
 
+
 @router.post('/logout')
-def logout(email : str):
+def logout(current_engineer : Engineer = Depends(get_current_engineer),  token : str = Depends(oauth2_scheme)):
     with Session(engine) as session:
-        statement = select(Engineer).where(Engineer.engineer_email == email)
+        statement = select(Engineer).where(Engineer.engineer_email == current_engineer.engineer_email)
         engineer = session.exec(statement).first()
         if engineer:
             # Update the is_logged_in field to False for the logged-out engineer
@@ -89,6 +94,8 @@ def logout(email : str):
             session.add(engineer)
             session.commit()
             session.refresh(engineer)
+
+            token_blacklist.add(token)
 
             return {
                 "msg" : f"User Successfully logged out {engineer.engineer_email}"

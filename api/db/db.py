@@ -5,10 +5,18 @@ from pydantic import BaseModel, StringConstraints
 from datetime import datetime, timezone, UTC
 import os
 from dotenv import load_dotenv
+from sqlalchemy.engine import URL
 
 load_dotenv()
 
-db_password = os.getenv('DB_PASSWORD')
+db_url = URL.create(
+    drivername="postgresql+psycopg2",
+    username=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    host=os.getenv("DB_HOST"),
+    port=int(os.getenv("DB_PORT", "5432")),
+    database=os.getenv("DB_NAME")
+)
 
 class Engineer(SQLModel, table=True):
     engineer_id: int | None = Field(default=None, primary_key=True, description="Unique identifier for the engineer", lt=10**10, gt=10**8)
@@ -26,6 +34,5 @@ class Log(SQLModel, table=True):
     confidence : float 
     eng_logged_in : int = Field(default=None, foreign_key="engineer.engineer_id", description="Foreign key referencing the engineer who logged in")
 
-Database_URL = f"postgresql://postgres:{db_password}@localhost:5432/mars_oil"
-engine = create_engine(Database_URL, echo=True)
+engine = create_engine(db_url, echo=True)
 

@@ -36,3 +36,5 @@ cleaned_csv/dvc-storage-*.json
 
 // ENV VARIABLES
 .env
+
+mlflow.db
