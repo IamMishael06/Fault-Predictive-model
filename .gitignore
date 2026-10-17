@@ -1,0 +1,28 @@
+# Environment variables and secrets
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Python generated files
+__pycache__/
+*.py[cod]
+
+# macOS
+.DS_Store
+
+# Local databases
+mlflow.db
+
+# Raw and processed datasets
+/data/
+/resampled_csv/
+
+# Ignore all cleaned CSV files except the synthetic demo
+/cleaned_csv/*
+!/cleaned_csv/synthetic_oil_stream_1s_30_predictions.csv
+
+# Keep development notebooks off main
+/notebooks/
+
+/.dvc/
