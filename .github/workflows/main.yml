@@ -69,4 +69,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/fault-detector:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/oilwellfaultdetector:latest
